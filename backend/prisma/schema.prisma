@@ -1,0 +1,388 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String             @id @default(cuid())
+  email                String             @unique
+  name                 String
+  password             String
+  role                 UserRole           @default(STAFF)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  resetPasswordExpires DateTime?
+  resetPasswordToken   String?
+  deliveries           DeliveryOrder[]
+  transfers            InternalTransfer[]
+  moveHistory          MoveHistory[]
+  receipts             ReceiptOrder[]
+  adjustments          StockAdjustment[]
+  invoices             Invoice[]
+  payments             Payment[]
+  auditLogs            AuditLog[]
+
+  @@map("users")
+}
+
+model Product {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  sku           String         @unique
+  unit          String
+  minStock      Int            @default(0)
+  price         Float          @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deliveryItems DeliveryItem[]
+  moveHistory   MoveHistory[]
+  receiptItems  ReceiptItem[]
+  stocks        Stock[]
+  invoiceItems  InvoiceItem[]
+
+  @@map("products")
+}
+
+model Vendor {
+  id        String         @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  receipts  ReceiptOrder[]
+
+  @@map("vendors")
+}
+
+model Location {
+  id            String             @id @default(cuid())
+  name          String
+  address       String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deliveries    DeliveryOrder[]
+  transfersFrom InternalTransfer[] @relation("TransferFrom")
+  transfersTo   InternalTransfer[] @relation("TransferTo")
+  moveHistory   MoveHistory[]
+  receipts      ReceiptOrder[]
+  adjustments   StockAdjustment[]
+  stocks        Stock[]
+
+  @@map("locations")
+}
+
+model Stock {
+  id         String   @id @default(cuid())
+  quantity   Int      @default(0)
+  productId  String
+  locationId String
+  updatedAt  DateTime @updatedAt
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locationId])
+  @@map("stocks")
+}
+
+model ReceiptOrder {
+  id            String        @id @default(cuid())
+  receiptNumber String        @unique
+  vendorId      String
+  locationId    String
+  userId        String
+  totalItems    Int           @default(0)
+  notes         String?
+  isValidated   Boolean       @default(false)
+  validatedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  items         ReceiptItem[]
+  location      Location      @relation(fields: [locationId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+  vendor        Vendor        @relation(fields: [vendorId], references: [id])
+
+  @@map("receipt_orders")
+}
+
+model ReceiptItem {
+  id               String       @id @default(cuid())
+  receiptId        String
+  productId        String
+  quantityReceived Int
+  createdAt        DateTime     @default(now())
+  product          Product      @relation(fields: [productId], references: [id])
+  receipt          ReceiptOrder @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_items")
+}
+
+model DeliveryOrder {
+  id             String         @id @default(cuid())
+  deliveryNumber String         @unique
+  locationId     String
+  userId         String
+  totalItems     Int            @default(0)
+  notes          String?
+  isValidated    Boolean        @default(false)
+  validatedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  items          DeliveryItem[]
+  location       Location       @relation(fields: [locationId], references: [id])
+  user           User           @relation(fields: [userId], references: [id])
+
+  @@map("delivery_orders")
+}
+
+model DeliveryItem {
+  id                String        @id @default(cuid())
+  deliveryId        String
+  productId         String
+  quantityDelivered Int
+  createdAt         DateTime      @default(now())
+  delivery          DeliveryOrder @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  product           Product       @relation(fields: [productId], references: [id])
+
+  @@map("delivery_items")
+}
+
+model InternalTransfer {
+  id             String    @id @default(cuid())
+  transferNumber String    @unique
+  fromLocationId String
+  toLocationId   String
+  userId         String
+  productId      String
+  quantity       Int
+  notes          String?
+  isApplied      Boolean   @default(false)
+  appliedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  fromLocation   Location  @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocation     Location  @relation("TransferTo", fields: [toLocationId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@map("internal_transfers")
+}
+
+model StockAdjustment {
+  id               String   @id @default(cuid())
+  adjustmentNumber String   @unique
+  locationId       String
+  userId           String
+  productId        String
+  quantityChange   Int
+  reason           String
+  notes            String?
+  createdAt        DateTime @default(now())
+  location         Location @relation(fields: [locationId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@map("stock_adjustments")
+}
+
+model MoveHistory {
+  id              String   @id @default(cuid())
+  moveType        MoveType
+  productId       String
+  locationId      String
+  userId          String
+  quantityBefore  Int
+  quantityAfter   Int
+  quantityChanged Int
+  referenceId     String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  location        Location @relation(fields: [locationId], references: [id])
+  product         Product  @relation(fields: [productId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@map("move_history")
+}
+
+model LowStockAlert {
+  id         String           @id @default(cuid())
+  productId  String
+  locationId String
+  currentQty Int
+  minQty     Int
+  severity   AlertSeverity
+  isRead     Boolean          @default(false)
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([productId, locationId])
+  @@map("low_stock_alerts")
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  customerId    String?
+  customerName  String
+  customerEmail String?
+  customerPhone String?
+  customerAddress String?
+  userId        String
+  subtotal      Float
+  taxRate       Float         @default(0)
+  taxAmount     Float         @default(0)
+  discount      Float         @default(0)
+  totalAmount   Float
+  paidAmount    Float         @default(0)
+  balanceAmount Float         @default(0)
+  status        InvoiceStatus @default(DRAFT)
+  dueDate       DateTime?
+  paidDate      DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  items         InvoiceItem[]
+  payments      Payment[]
+  user          User          @relation(fields: [userId], references: [id])
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  productId   String
+  description String?
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  paymentNumber   String        @unique
+  invoiceId       String
+  amount          Float
+  paymentMethod   PaymentMethod
+  paymentDate     DateTime      @default(now())
+  transactionId   String?
+  notes           String?
+  userId          String
+  createdAt       DateTime      @default(now())
+  invoice         Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@map("payments")
+}
+
+enum UserRole {
+  ADMIN
+  INVENTORY_MANAGER
+  STAFF
+}
+
+enum MoveType {
+  RECEIPT
+  DELIVERY
+  TRANSFER_OUT
+  TRANSFER_IN
+  ADJUSTMENT_INCREASE
+  ADJUSTMENT_DECREASE
+}
+
+enum AlertSeverity {
+  CRITICAL
+  WARNING
+  LOW
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIAL
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  CHECK
+  OTHER
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+  VIEW
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  category    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model CompanyInfo {
+  id            String   @id @default(cuid())
+  companyName   String
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String?
+  phone         String?
+  email         String?
+  website       String?
+  taxId         String?
+  logo          String?
+  currency      String   @default("USD")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("company_info")
+}
+
+model AuditLog {
+  id          String     @id @default(cuid())
+  userId      String?
+  userName    String?
+  action      AuditAction
+  entity      String
+  entityId    String?
+  changes     String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime   @default(now())
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
