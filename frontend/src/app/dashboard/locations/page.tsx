@@ -53,9 +53,9 @@ export default function LocationsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Locations</h1>
-                    <p className="text-gray-600">Manage warehouse and storage locations</p>
+                    <p className="text-gray-600">Manage warehouse locations</p>
                 </div>
-                <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     <Plus className="h-5 w-5" />Add Location
                 </button>
             </div>

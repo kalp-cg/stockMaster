@@ -166,7 +166,7 @@ export default function AdjustmentsPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-4xl font-bold gradient-text mb-2">Stock Adjustments</h1>
+                        <h1 className="text-3xl font-bold mb-2">Stock Adjustments</h1>
                         <p className="text-gray-600">Correct inventory discrepancies and physical counts</p>
                     </div>
                     <button

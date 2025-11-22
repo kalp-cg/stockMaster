@@ -519,7 +519,7 @@ export default function ReceiptsPage() {
                         <h1 className="text-3xl font-bold text-text-primary">Receipts</h1>
                         <p className="text-text-secondary mt-1">Manage incoming stock from vendors</p>
                     </div>
-                    {hasPermission(Permission.CREATE_RECEIPTS) && (
+                    {(user?.role === 'ADMIN' || user?.role === 'INVENTORY_MANAGER') && (
                         <button
                             onClick={() => setViewMode('create')}
                             className="flex items-center gap-2 px-5 py-2.5 bg-odoo-purple text-white rounded-lg hover:bg-odoo-purple-soft transition-colors shadow-sm"
