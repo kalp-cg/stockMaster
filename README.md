@@ -463,6 +463,8 @@ graph LR
 
 ## 📚 API Documentation
 
+**Interactive API Docs:** [View Official Postman Documentation](https://documenter.getpostman.com/view/39188593/2sBXwjxEgH)
+
 ### **Authentication Endpoints**
 
 ```http
