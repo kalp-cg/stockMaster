@@ -559,6 +559,16 @@ cd ../frontend
 railway up
 ```
 
+### **Quick Deploy to Vercel**
+
+```bash
+# From the repo root
+cd frontend
+npm run deploy:vercel
+```
+
+If the project is not linked yet, Vercel will ask you to connect the repo once and then reuse that setup for later deploys.
+
 ### **Environment Variables for Production**
 
 **Backend:**
