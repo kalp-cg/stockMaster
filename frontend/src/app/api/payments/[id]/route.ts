@@ -4,15 +4,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const token = request.headers.get('Authorization');
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const response = await fetch(`${API_URL}/api/payments/${params.id}`, {
+        const response = await fetch(`${API_URL}/api/payments/${id}`, {
             headers: {
                 'Authorization': token
             }
@@ -27,15 +28,16 @@ export async function GET(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const token = request.headers.get('Authorization');
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const response = await fetch(`${API_URL}/api/payments/${params.id}`, {
+        const response = await fetch(`${API_URL}/api/payments/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': token

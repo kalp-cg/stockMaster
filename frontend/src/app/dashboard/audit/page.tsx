@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { Shield, User, Activity, Calendar, Filter, Download, Search } from 'lucide-react';
 
 interface AuditLog {
@@ -31,7 +30,6 @@ interface AuditStats {
 }
 
 export default function AuditTrailPage() {
-    const { token } = useAuth();
     const [logs, setLogs] = useState<AuditLog[]>([]);
     const [stats, setStats] = useState<AuditStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -47,6 +45,11 @@ export default function AuditTrailPage() {
     });
     const [showFilters, setShowFilters] = useState(false);
     const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+
+    const getToken = () => {
+        if (typeof window === 'undefined') return '';
+        return localStorage.getItem('token') || '';
+    };
 
     useEffect(() => {
         fetchLogs();
@@ -68,7 +71,7 @@ export default function AuditTrailPage() {
 
             const response = await fetch(`/api/audit?${params.toString()}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             const data = await response.json();
@@ -89,7 +92,7 @@ export default function AuditTrailPage() {
 
             const response = await fetch(`/api/audit/stats?${params.toString()}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             const data = await response.json();

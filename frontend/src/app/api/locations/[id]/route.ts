@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE_URL = 'http://localhost:4000/api';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${params.id}`, {
+        const { id } = await params;
+        const response = await fetch(`${API_BASE_URL}/locations/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': request.headers.get('authorization') || '',
@@ -24,11 +25,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const body = await request.json();
+        const { id } = await params;
 
-        const response = await fetch(`${API_BASE_URL}/locations/${params.id}`, {
+        const response = await fetch(`${API_BASE_URL}/locations/${id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': request.headers.get('authorization') || '',
@@ -49,9 +51,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const response = await fetch(`${API_BASE_URL}/locations/${params.id}`, {
+        const { id } = await params;
+        const response = await fetch(`${API_BASE_URL}/locations/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': request.headers.get('authorization') || '',

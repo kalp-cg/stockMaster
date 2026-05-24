@@ -27,7 +27,6 @@ interface SystemSettings {
 }
 
 export default function SettingsPage() {
-    const { token } = useAuth();
     const [activeTab, setActiveTab] = useState<string>('company');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -65,6 +64,11 @@ export default function SettingsPage() {
         invoice_due_days: '30'
     });
 
+    const getToken = () => {
+        if (typeof window === 'undefined') return '';
+        return localStorage.getItem('token') || '';
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -83,7 +87,7 @@ export default function SettingsPage() {
         try {
             const response = await fetch('/api/settings/company', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             
@@ -100,7 +104,7 @@ export default function SettingsPage() {
         try {
             const response = await fetch('/api/settings', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             
@@ -127,7 +131,7 @@ export default function SettingsPage() {
             const response = await fetch('/api/settings/initialize', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
 
@@ -150,7 +154,7 @@ export default function SettingsPage() {
             const response = await fetch('/api/settings/company', {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${getToken()}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(companyInfo)
@@ -186,7 +190,7 @@ export default function SettingsPage() {
             const response = await fetch('/api/settings', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${getToken()}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ settings })

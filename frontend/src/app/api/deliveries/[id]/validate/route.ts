@@ -4,12 +4,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.cookies.get('token')?.value;
 
-    const response = await fetch(`${API_URL}/api/deliveries/${params.id}/validate`, {
+    const response = await fetch(`${API_URL}/api/deliveries/${id}/validate`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

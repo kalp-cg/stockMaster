@@ -55,7 +55,6 @@ interface PaymentStats {
 }
 
 export default function PaymentsPage() {
-    const { token } = useAuth();
     const [payments, setPayments] = useState<Payment[]>([]);
     const [stats, setStats] = useState<PaymentStats | null>(null);
     const [unpaidInvoices, setUnpaidInvoices] = useState<Invoice[]>([]);
@@ -69,6 +68,11 @@ export default function PaymentsPage() {
         notes: ''
     });
 
+    const getToken = () => {
+        if (typeof window === 'undefined') return '';
+        return localStorage.getItem('token') || '';
+    };
+
     useEffect(() => {
         fetchPayments();
         fetchStats();
@@ -79,7 +83,7 @@ export default function PaymentsPage() {
         try {
             const response = await fetch('/api/payments', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             const data = await response.json();
@@ -93,7 +97,7 @@ export default function PaymentsPage() {
         try {
             const response = await fetch('/api/payments/stats', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             const data = await response.json();
@@ -107,7 +111,7 @@ export default function PaymentsPage() {
         try {
             const response = await fetch('/api/invoices?status=SENT,PARTIAL,OVERDUE', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
             const data = await response.json();
@@ -127,7 +131,7 @@ export default function PaymentsPage() {
             const response = await fetch('/api/payments', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${getToken()}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -164,7 +168,7 @@ export default function PaymentsPage() {
             const response = await fetch(`/api/payments/${paymentId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${getToken()}`
                 }
             });
 

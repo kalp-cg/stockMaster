@@ -4,12 +4,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.headers.get('authorization');
     const body = await request.json();
-    const response = await fetch(`${API_URL}/api/users/${params.id}`, {
+    const response = await fetch(`${API_URL}/api/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -26,11 +27,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.headers.get('authorization');
-    const response = await fetch(`${API_URL}/api/users/${params.id}`, {
+    const response = await fetch(`${API_URL}/api/users/${id}`, {
       method: 'DELETE',
       headers: token ? { Authorization: token } : {},
     });

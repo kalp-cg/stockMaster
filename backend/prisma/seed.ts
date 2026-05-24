@@ -6,6 +6,27 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
+  // Clean up existing data so the seed produces a fresh demo database
+  await prisma.auditLog.deleteMany({});
+  await prisma.payment.deleteMany({});
+  await prisma.invoiceItem.deleteMany({});
+  await prisma.invoice.deleteMany({});
+  await prisma.lowStockAlert.deleteMany({});
+  await prisma.stockAdjustment.deleteMany({});
+  await prisma.receiptItem.deleteMany({});
+  await prisma.receiptOrder.deleteMany({});
+  await prisma.deliveryItem.deleteMany({});
+  await prisma.deliveryOrder.deleteMany({});
+  await prisma.internalTransfer.deleteMany({});
+  await prisma.moveHistory.deleteMany({});
+  await prisma.stock.deleteMany({});
+  await prisma.companyInfo.deleteMany({});
+  await prisma.systemSetting.deleteMany({});
+  await prisma.vendor.deleteMany({});
+  await prisma.location.deleteMany({});
+  await prisma.product.deleteMany({});
+  await prisma.user.deleteMany({});
+
   // Create default admin
   const adminPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
@@ -21,7 +42,7 @@ async function main() {
   console.log('✅ Admin created:', admin.email);
 
   // Create sample inventory managers
-  const managerPassword = await bcrypt.hash('manager123', 10);
+  const managerPassword = await bcrypt.hash('Manager@123', 10);
   const manager1 = await prisma.user.upsert({
     where: { email: 'manager@stockmaster.com' },
     update: {},
@@ -283,14 +304,6 @@ async function main() {
 
   console.log('✅ Stock levels created');
 
-  // Clean up existing activity data
-  await prisma.receiptItem.deleteMany({});
-  await prisma.receiptOrder.deleteMany({});
-  await prisma.deliveryItem.deleteMany({});
-  await prisma.deliveryOrder.deleteMany({});
-  await prisma.internalTransfer.deleteMany({});
-  await prisma.moveHistory.deleteMany({});
-
   // Create sample receipt orders (staff activity)
   const receipt1 = await prisma.receiptOrder.create({
     data: {
@@ -468,8 +481,8 @@ async function main() {
   console.log('     Email: admin@stockmaster.com');
   console.log('     Password: admin123');
   console.log('\n   Inventory Managers (2 users):');
-  console.log('     Email: manager@stockmaster.com / Password: manager123');
-  console.log('     Email: sarah.manager@stockmaster.com / Password: manager123');
+  console.log('     Email: manager@stockmaster.com / Password: Manager@123');
+  console.log('     Email: sarah.manager@stockmaster.com / Password: Manager@123');
   console.log('\n   Staff (8 users):');
   console.log('     Email: alice@stockmaster.com / Password: staff123');
   console.log('     Email: bob@stockmaster.com / Password: staff123');
