@@ -13,9 +13,15 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)](https://www.prisma.io/)
 
-[Features](#-key-features) • [Architecture](#-system-architecture) • [Installation](#-installation) • [Demo](#-demo-credentials) • [Documentation](#-documentation)
+[Features](#-key-features) • [Architecture](#-system-architecture) • [Installation](#-installation) • [Live Demo (Frontend)](https://stock-master-lbnz-cwk224bfz-kalp-cgs-projects.vercel.app/) • [Demo Credentials](#-demo-credentials) • [Documentation](#-documentation)
 
 </div>
+
+---
+
+## 🌐 Live Application
+- **Frontend (Vercel):** [https://stock-master-lbnz-cwk224bfz-kalp-cgs-projects.vercel.app/](https://stock-master-lbnz-cwk224bfz-kalp-cgs-projects.vercel.app/)
+- **Backend (Render):** [https://stockmaster-1-cnov.onrender.com](https://stockmaster-1-cnov.onrender.com)
 
 ---
 
@@ -529,25 +535,28 @@ const products = await fetch('http://localhost:4000/products', {
 
 ## 🚀 Deployment
 
-### **Recommended Stack**
+### **Deployed Environment**
 
-| Service | Platform | Cost |
+| Component | Platform | URL |
 |---------|----------|------|
-| **Frontend** | Vercel | Free |
-| **Backend** | Railway.app | $5/month |
-| **Database** | Railway PostgreSQL | Included |
+| **Frontend** | Vercel | [stock-master-lbnz-cwk224bfz-kalp-cgs-projects.vercel.app](https://stock-master-lbnz-cwk224bfz-kalp-cgs-projects.vercel.app/) |
+| **Backend** | Render | [stockmaster-1-cnov.onrender.com](https://stockmaster-1-cnov.onrender.com) |
+| **Database** | Neon.tech | PostgreSQL Serverless |
 
-### **Quick Deploy to Railway**
+### **Quick Deploy to Render & Vercel**
 
-```bash
-# Install Railway CLI
-npm i -g @railway/cli
+**Backend (Render):**
+1. Connect GitHub repository to Render as a "Web Service"
+2. Set Build Command: `npm install && npx prisma generate && npm run build`
+3. Set Start Command: `npm start`
+4. Add environment variables: `DATABASE_URL`, `JWT_SECRET`, etc.
 
-# Login and initialize
-railway login
-railway init
-
-# Add PostgreSQL database
+**Frontend (Vercel):**
+1. Import repository to Vercel
+2. Set Root Directory to `frontend`
+3. Framework Preset: `Next.js`
+4. Build Command: `npm run build`
+5. Add environment variable: `NEXT_PUBLIC_API_URL` pointing to backend URL.
 railway add
 
 # Deploy backend
